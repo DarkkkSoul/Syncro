@@ -9,7 +9,7 @@ export const signupController = async (req, res, next) => {
         const { username, email, password } = req.body;
 
         if (!username || !email || !password) {
-            const error = new Error("Fields not provided");
+            const error = new Error("Please fill all fields");
             error.statusCode = 404;
             throw error;
         }
@@ -26,12 +26,54 @@ export const signupController = async (req, res, next) => {
 
             const users = await User.create([{ username, email, password: hashedPassword }]);
 
-            const token = jwt.sign({ data: username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
+            const token = jwt.sign({ data: email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
 
             res.status(200).json({
                 message: 'User Created',
                 token,
                 userData: users[0]
+            })
+        }
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const signinController = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            const error = new Error("Please fill all fields");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+
+            const error = new Error('User doesnot exist');
+            error.statusCode = 404;
+            throw error;
+
+        } else {
+
+            const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+            if (!isPasswordCorrect) {
+                const error = new Error('Incorrect Password');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const token = jwt.sign({ data: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
+
+            res.status(200).json({
+                message: 'User signed in',
+                token,
+                userData: user
             })
         }
 
