@@ -36,31 +36,6 @@ export const createTeam = async (req, res, next) => {
     }
 }
 
-export const joinTeam = async (req, res, next) => {
-    try {
-
-        const teamId = req.params.id;
-        const user = req.user;
-
-        if (!teamId) {
-            const error = new Error('Team not found');
-            error.statusCode = 404;
-            throw error;
-        } else {
-            const team = await Team.findByIdAndUpdate(teamId, { $push: { members: [user._id] } });
-            await User.findByIdAndUpdate(user._id, { $push: { teams: [team._id] } });
-
-            res.status(201).json({
-                message: 'Joined to the team',
-                team
-            })
-        }
-
-    } catch (error) {
-        next(error);
-    }
-}
-
 export const deleteTeam = async (req, res, next) => {
     try {
         const teamId = req.params.id;
@@ -86,6 +61,54 @@ export const deleteTeam = async (req, res, next) => {
     }
 }
 
+export const membersTeam = async (req, res, next) => {
+    try {
+
+        const teamId = req.params.id;
+
+        const team = await Team.findById(teamId);
+
+        if (!team) {
+            const error = new Error('Team not found');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            res.status(201).json({
+                message: 'Team members loaded',
+                members: team.members
+            })
+        }
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const joinTeam = async (req, res, next) => {
+    try {
+
+        const teamId = req.params.id;
+        const user = req.user;
+
+        if (!teamId) {
+            const error = new Error('Team not found');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            const team = await Team.findByIdAndUpdate(teamId, { $push: { members: [user._id] } });
+            await User.findByIdAndUpdate(user._id, { $push: { teams: [team._id] } });
+
+            res.status(201).json({
+                message: 'Joined to the team',
+                team
+            })
+        }
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const exitTeam = async (req, res, next) => {
     try {
 
@@ -103,3 +126,46 @@ export const exitTeam = async (req, res, next) => {
         next(error);
     }
 }
+
+export const listTeam = async (req, res, next) => {
+    try {
+
+        const user = req.user;
+
+        if (user.teams.length == 0) {
+            const error = new Error("No teams exists");
+            error.statusCode = 404;
+            throw error;
+        } else {
+            res.status(201).json({
+                message: "Teams loaded",
+                teams: user.teams
+            })
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const infoTeam = async (req, res, next) => {
+    try {
+
+        const teamId = req.params.id;
+
+        const team = await Team.findById(teamId);
+
+        if (!team) {
+            const error = new Error('Team not found');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            res.status(201).json({
+                message: 'Team info loaded',
+                team
+            })
+        }
+
+    } catch (error) {
+        next(error);
+    }
+} 
