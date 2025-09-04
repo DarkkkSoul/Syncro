@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.route.js';
 import connectToDB from './database/mongo.js';
 import teamRouter from './routes/team.route.js';
+import taskRouter from './routes/task.route.js';
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.use(cookieParser());
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/team', teamRouter)
-
+app.use('/api/v1/task', taskRouter)
 
 app.use(errorHandler);
 

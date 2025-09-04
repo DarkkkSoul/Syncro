@@ -20,6 +20,12 @@ const teamSchema = new mongoose.Schema({
             ref: 'User',
         }
     ],
+    tasks: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Task',
+        }
+    ],
 }, { timestamps: true });
 
 export const Team = mongoose.model('Team', teamSchema);
