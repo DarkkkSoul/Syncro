@@ -74,4 +74,41 @@ export const updateTask = async (req, res, next) => {
     }
 }
 
-// update task, viewtask - team page, view tasks- personal page
+export const viewTaskAtTeamPage = async (req, res, next) => {
+    try {
+        const teamId = req.params.id;
+        const team = await Team.findById(teamId);
+
+        if (!team) {
+            const error = new Error('Team not found');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            res.status(201).json({
+                message: 'Team tasks loaded',
+                tasks: team.tasks
+            })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const viewTaskAtPersonalPage = async (req, res, next) => {
+    try {
+        const user = req.user;
+
+        if (!user) {
+            const error = new Error('Please Login');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            res.status(201).json({
+                message: 'User tasks loaded',
+                tasks: user.tasks
+            })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
