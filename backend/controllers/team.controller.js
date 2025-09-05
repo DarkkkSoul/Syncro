@@ -149,9 +149,7 @@ export const listTeam = async (req, res, next) => {
 
 export const infoTeam = async (req, res, next) => {
     try {
-
         const teamId = req.params.id;
-
         const team = await Team.findById(teamId);
 
         if (!team) {

@@ -44,3 +44,34 @@ export const createTask = async (req, res, next) => {
         next(error)
     }
 }
+
+export const updateTask = async (req, res, next) => {
+    try {
+        const taskId = req.params.id;
+        const user = req.user;
+
+        const task = await Task.findById(taskId);
+
+        if (!task) {
+            const error = new Error('Task not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (user._id.toString() !== task.assignedTo.toString()) {
+            const error = new Error('Not an assigned user');
+            error.statusCode = 404;
+            throw error;
+        } else {
+            const updatedTask = await Task.findByIdAndUpdate(taskId, req.body);
+            res.status(201).json({
+                message: 'Task updated',
+                updatedTask
+            })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+// update task, viewtask - team page, view tasks- personal page
