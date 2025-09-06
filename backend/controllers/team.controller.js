@@ -133,7 +133,7 @@ export const listTeam = async (req, res, next) => {
         const user = req.user;
 
         if (user.teams.length == 0) {
-            const error = new Error("No teams exists");
+            const error = new Error("Not a member of any team");
             error.statusCode = 404;
             throw error;
         } else {
